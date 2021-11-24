@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "conditionapplication.h"
-#include "libwfp/internal/conditionassembler.h"
-#include "libcommon/error.h"
+#include <libwfp/internal/conditionassembler.h>
+#include <libcommon/error.h>
 #include <sstream>
 
 using ConditionAssembler = ::wfp::internal::ConditionAssembler;
@@ -14,9 +14,12 @@ ConditionApplication::ConditionApplication(const std::wstring &application, cons
 {
 	FWP_BYTE_BLOB *blob;
 
-	auto status = FwpmGetAppIdFromFileName(m_application.c_str(), &blob);
+	auto status = FwpmGetAppIdFromFileName0(m_application.c_str(), &blob);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Retrieve application identifier from filename");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Retrieve application identifier from filename");
+	}
 
 	m_assembled = ConditionAssembler::ByteBlob(identifier(), m_comparison.op(), *blob);
 

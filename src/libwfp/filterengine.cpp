@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "filterengine.h"
-#include "libcommon/error.h"
+#include <libcommon/error.h>
 #include <guiddef.h>
 #include <fwpmu.h>
 #include <windows.h>
@@ -30,7 +30,10 @@ FilterEngine::FilterEngine(bool dynamic, uint32_t *timeout)
 		&session
 	);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Connect to WFP");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Connect to WFP");
+	}
 
 	m_session = session;
 }
